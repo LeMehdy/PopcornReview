@@ -9,3 +9,11 @@ dynamic online platform designed to foster a community of film enthusiasts, crit
 and casual viewers alike. This digital space serves as a hub for movie lovers to
 discover, discuss, and evaluate films of various genres, eras, and cultural
 backgrounds.
+
+
+# Contact :
+## MICHALAK Mehdy
+email: mehdy.michalak@efrei.net
+discord: lil.cat_
+## POUYAT Adrien
+email : adrien.pouyat@efrei.net
