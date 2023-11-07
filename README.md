@@ -17,3 +17,13 @@ email: mehdy.michalak@efrei.net
 discord: lil.cat_
 ## POUYAT Adrien
 email : adrien.pouyat@efrei.net
+
+
+Sitemaps : 
+Home
+Sign In
+Random Movie
+My Watchlist
+Movies
+Movie Page
+Profile
