@@ -1,0 +1,29 @@
+<!-- views/hello_view.ejs --> 
+<!-- partial view + simple view code to DISPLAY DATA --> 
+<!-- view does NOT depend on the controller!!! --> 
+<!-- PHP: smarty, twig ... C#: razor ... Java: JSP --> 
+<!-- receives: array with the name 'favourites', objects with category+thing -->
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>HELLO demo page for Express.js</title>
+        <script language='javascript'>
+            //if (favourites.length){
+            //    document.write("<p>I have favourites!!!</p>");
+            //}
+        </script>
+    </head>
+    <body>
+        <h1>Hello, Express World In a View!!!</h1>
+        <h2>My favourite movies are......</h2>
+        <div style='color:red;margin:10px;padding:10px;border:1px solid black'>
+            <% if (favourites.length) { %>
+                <p>I have favourites!!!</p>
+                <% for (var fav of favourites) { %>
+                    <p><strong><%= fav.category %></strong>: <%= fav.thing %></p>
+                <% } %>
+            <% } %>
+        </div>
+    </body>
+</html>
