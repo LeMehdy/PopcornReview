@@ -1,0 +1,18 @@
+{
+  "name": "popcornreview",
+  "version": "1.0.0",
+  "description": "In the era of digital entertainment, movies have taken center stage as a primary\r source of leisure and cultural engagement. When people want to do a critical\r analysis, or simply share opinions, they are increasingly turning to websites\r dedicated to movie ratings and reviews. A website where users can rate movies is a\r dynamic online platform designed to foster a community of film enthusiasts, critics,\r and casual viewers alike. This digital space serves as a hub for movie lovers to\r discover, discuss, and evaluate films of various genres, eras, and cultural\r backgrounds.",
+  "main": "prout.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "mysql": "^2.18.1",
+    "request": "^2.88.2"
+  }
+}
