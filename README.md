@@ -18,6 +18,12 @@ discord: lil.cat_
 ## POUYAT Adrien
 email : adrien.pouyat@efrei.net
 
-/rando
-/conect 
 
+Sitemaps : 
+Home
+Sign In
+Random Movie
+My Watchlist
+Movies
+Movie Page
+Profile
