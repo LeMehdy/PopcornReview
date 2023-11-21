@@ -1,85 +1,46 @@
 const express = require('express');
 const app = express();
+const axios = require('axios');
+const mysql = require("mysql");
 
-// Configuration pour utiliser EJS comme moteur de modèle
+const db = mysql.createConnection({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE
+})
+
+const apiKey = 'df1e67f93440369e82c54d553192cb3b'; // Remplacez par votre clé API TMDb
+
+
 app.set('view engine', 'ejs');
-const mysql = require('mysql');
 
-
-
-// Importez la configuration de connexion à la base de données depuis votre fichier db.js
-const db = require('./db');
-
-app.get('/', async (req, res) => {
+app.get('/movie/:id', async (req, res) => {
     try {
-        const Nmovies = await getRecentMovies();
-        const Rmovies = await getRandomMovies();
+        const movieId = req.params.id;
+        // Appel à l'API pour récupérer les détails du film en utilisant l'ID du film
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}`);
+        const movieDetails = response.data;
 
-        res.render('index', { Nmovies, Rmovies });
-    } catch (err) {
-        console.error('Erreur lors de la récupération des films : ' + err);
-        res.status(500).send('Erreur lors de la récupération des films');
+        // Rendre la vue (template) EJS en transmettant les détails du film
+        res.render('movie-details', { movieDetails: movieDetails });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur lors de la récupération des détails du film' });
     }
 });
 
-async function getRecentMovies() {
-    return new Promise((resolve, reject) => {
-        const Nquery = 'SELECT * FROM Movies ORDER BY ReleaseDate DESC LIMIT 5';
-        db.query(Nquery, (err, results) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(results);
-            }
-        });
-    });
-}
+app.get('/', async (req, res) => {
+    try {
+        const trendingResponse = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`);
+        const trendingMovies = trendingResponse.data.results;
 
-async function getRandomMovies() {
-    return new Promise((resolve, reject) => {
-        const Rquery = 'SELECT * FROM Movies ORDER BY RAND() LIMIT 5';
-        db.query(Rquery, (err, results) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(results);
-            }
-        });
-    });
-}
+        const newMoviesResponse = await axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=fr-FR&page=1`);
+        const newMovies = newMoviesResponse.data.results;
 
-// Créez une route pour récupérer les films récemment ajoutés
-app.get('/new-movies', (req, res) => {
-    // Effectuez une requête SQL pour récupérer les films récemment ajoutés depuis la base de données
-    const query = 'SELECT * FROM Movies ORDER BY ReleaseDate DESC LIMIT 5'; // Par exemple, les 5 films les plus récents
-
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Erreur lors de la récupération des films récents : ' + err);
-            res.status(500).send('Erreur lors de la récupération des films récents');
-            return;
-        }
-
-        // Renvoyez les résultats à la vue (template) pour les afficher dans la section "New on PopcornReview"
-        res.render('new-movies', { Nmovies: results });
-    });
-});
-
-// Créez une route pour récupérer des films aléatoires
-app.get('/random-movies', (req, res) => {
-    // Effectuez une requête SQL pour récupérer des films aléatoires depuis la base de données
-    const query = 'SELECT * FROM Movies ORDER BY RAND() LIMIT 5'; // Par exemple, 5 films aléatoires
-
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Erreur lors de la récupération des films aléatoires : ' + err);
-            res.status(500).send('Erreur lors de la récupération des films aléatoires');
-            return;
-        }
-
-        // Renvoyez les résultats à la vue (template) pour les afficher dans la section "Some Random Movies"
-        res.render('random-movies', { Rmovies: results });
-    });
+        res.render('index', { movies: trendingMovies, newMovies: newMovies });
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur lors de la récupération des données' });
+    }
 });
 
 // Écoutez le port pour les requêtes HTTP
