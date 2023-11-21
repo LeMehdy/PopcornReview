@@ -25,8 +25,9 @@ router.get('/', (req, res) => {
     res.render('register'); // Ou tout autre traitement pour cette route
 });
 
-// Traitement du formulaire d'inscription
+
 router.post('/', (req, res) => {
+  console.log(req.body)
     const { username, email, password, full_name, date_of_birth, bio, profile_image_url } = req.body;
 
     const user = {
@@ -44,7 +45,7 @@ router.post('/', (req, res) => {
             res.status(500).json({ error: 'Erreur lors de l\'inscription' });
             throw err;
         }
-        res.redirect('/login'); // Redirection vers la page de connexion après l'inscription
+        res.redirect('/'); // Redirection vers la page de connexion après l'inscription
     });
 });
 

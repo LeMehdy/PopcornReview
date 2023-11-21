@@ -2,14 +2,18 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const axios = require('axios');
-const registerRouter = require('./register');
+const bodyParser = require('body-parser')
 
 const apiKey = 'df1e67f93440369e82c54d553192cb3b'; 
 
 app.set("view engine", "ejs");
 app.set('views', path.join( './views'));
-app.use("/img", express.static("img/"))
-app.use('/register', registerRouter);
+app.use('/img', express.static("img/")); 
+app.use(bodyParser.urlencoded({extended: true}))
+app.use('/register', require('./register'));
+
+
+
 app.get('/movie/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
