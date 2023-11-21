@@ -9,24 +9,12 @@ const apiKey = 'df1e67f93440369e82c54d553192cb3b';
 app.set("view engine", "ejs");
 app.set('views', path.join( './views'));
 app.use('/img', express.static("img/")); 
-app.use(bodyParser.urlencoded({extended: true}))
-app.use('/register', require('./register'));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use('/register', require('./controllers/register'));
+app.use('/movies',require('./controllers/moviesdetail'))
 
 
 
-app.get('/movie/:id', async (req, res) => {
-    try {
-        const movieId = req.params.id;
-        // Appel à l'API pour récupérer les détails du film en utilisant l'ID du film
-        const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}`);
-        const movieDetails = response.data;
-
-        // Rendre la vue (template) EJS en transmettant les détails du film
-        res.render('movie-details', { movieDetails: movieDetails });
-    } catch (error) {
-        res.status(500).json({ error: 'Erreur lors de la récupération des détails du film' });
-    }
-});
 
 app.get('/', async (req, res) => {
     try {
