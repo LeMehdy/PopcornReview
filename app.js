@@ -11,7 +11,7 @@ app.set('views', path.join( './views'));
 app.use('/static', express.static("static/")); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/register', require('./controllers/register'));
-app.use('/movie',require('./controllers/moviesdetail'));
+app.use('/movie-details',require('./controllers/moviesdetail'));
 app.use('/movies',require('./controllers/movies'))
 
 
