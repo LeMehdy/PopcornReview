@@ -2,38 +2,55 @@
 <header class="bg-dark">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between">
         <a href="/",clas="navbar-brand">
-            <img src="../img/logo.png", alt="PopcornReview Logo" width="110" height="80">
+            <img src="../static/img/logo.png", alt="PopcornReview Logo" width="110" height="80">
         </a>
-        <div class="form-inline">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            <button class="btn btn-primary my-2 my-sm-0" type="button">Search</button>
+        <div class="container mainpage">
+            <div class="waviy">
+                <span style="--i:1">P</span>
+                <span style="--i:2">o</span>
+                <span style="--i:3">p</span>
+                <span style="--i:4">c</span>
+                <span style="--i:5">o</span>
+                <span style="--i:6">r</span>
+                <span style="--i:7">n</span>
+            </div>
+            <div class="d-flex flex-row">
+                <form action="/movie/search" method="post" class="searchbar"><input class="form-control" type="text" name="searchTerm" id="searchInput" placeholder="Search" aria-label="Search"></form>
+                <div class="dropdown">
+                    <ul id="searchDropdown" class="dropdown-menu" aria-labelledby="searchInput"></ul>
+                </div>
+                <button class="btn btn-primary my-2 my-sm-0" type="button">Search</button>
+            </div>
+            
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profil</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">aa</a></li>
-                        <li><a class="dropdown-item" href="#">aaa</a></li>
-                        <li><a class="dropdown-item" href="#">Aaaa</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Movies</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">My Watchedlist</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Random Movie</a>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Sign in/Log in</button>
-                </li>
-            </ul>
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Profil</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">aa</a></li>
+                            <li><a class="dropdown-item" href="#">aaa</a></li>
+                            <li><a class="dropdown-item" href="#">Aaaa</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">My Watchedlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Random Movie</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Sign in/Log in</button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
@@ -54,7 +71,12 @@
                   <label for="inputPassword" class="form-label">Password</label>
                   <input type="password" class="form-control" id="inputPassword">
                 </div>
-                <a href="./register">
+                <div class="form-check mb-3">
+                    <label class="form-check-label">
+                      <input class="form-check-input" type="checkbox" name="remember"> Remember me
+                    </label>
+                  </div>
+                <a href="/register">
                     <h6 class="sign up">No account ? Sign up</h6>
                 </a>
                 <button type="submit" class="btn btn-primary">Login</button>
@@ -63,6 +85,53 @@
           </div>
         </div>
       </div>
+      <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script>
+        // À placer dans un fichier JavaScript séparé ou directement dans votre page HTML
+        $(document).ready(function() {
+            $('#searchInput').on('input', function() {
+                const searchQuery = $(this).val().trim();
+                if (searchQuery.length > 0) {
+                    $.get(`https://api.themoviedb.org/3/search/movie?api_key=df1e67f93440369e82c54d553192cb3b&query=${searchQuery}`)
+                    .done(function(data) {
+                        const movies = data.results.slice(0, 5); // Limitez les résultats à un certain nombre
+                        displaySuggestions(movies);
+                    })
+                    .fail(function() {
+                        console.error('Failed to fetch movie suggestions.');
+                    });
+                } else {
+                    $('#searchDropdown').empty().hide();
+                }
+            });
+
+            function displaySuggestions(movies) {
+                const dropdown = $('#searchDropdown');
+                dropdown.empty();
+
+                movies.forEach(function(movie) {
+                    const listItem = `<li><a class="dropdown-item" href="#">${movie.title}</a></li>`;
+                    dropdown.append(listItem);
+                });
+
+                dropdown.show();
+            }
+
+            $(document).on('click', '#searchDropdown .dropdown-item', function() {
+                const selectedMovie = $(this).text();
+                $('#searchInput').val(selectedMovie);
+                $('#searchDropdown').empty().hide();
+                // Effectuez une action de recherche ou de redirection en fonction du film sélectionné
+            });
+
+            $('#searchButton').on('click', function() {
+                const searchTerm = $('#searchInput').val().trim();
+                // Effectuez une action de recherche ou de redirection en fonction du terme de recherche
+            });
+        });
+
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    
 </header>

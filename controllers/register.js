@@ -45,7 +45,7 @@ router.post('/', (req, res) => {
             res.status(500).json({ error: 'Erreur lors de l\'inscription' });
             throw err;
         }
-        res.redirect('/'); // Redirection vers la page de connexion après l'inscription
+        res.redirect('../'); // Redirection vers la page de connexion après l'inscription
     });
 });
 

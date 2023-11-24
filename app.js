@@ -8,10 +8,11 @@ const apiKey = 'df1e67f93440369e82c54d553192cb3b';
 
 app.set("view engine", "ejs");
 app.set('views', path.join( './views'));
-app.use('/img', express.static("img/")); 
+app.use('/static', express.static("static/")); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/register', require('./controllers/register'));
-app.use('/movies',require('./controllers/moviesdetail'))
+app.use('/movie',require('./controllers/moviesdetail'));
+app.use('/movies',require('./controllers/movies'))
 
 
 
