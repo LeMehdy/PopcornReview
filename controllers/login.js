@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const bcrypt = require('bcrypt');
+const mysql = require('mysql');
 const dotenv = require('dotenv');
 
-dotenv.config();
+dotenv.config({ path: './.env' });
 
 const db = mysql.createConnection({
     host: process.env.DATABASE_HOST,
@@ -13,44 +13,44 @@ const db = mysql.createConnection({
     database: process.env.DATABASE
 });
 
-// Connexion à la base de données MySQL
-db.connect((error) => {
-    if (error) {
-        console.error('Erreur de connexion à la base de données :', error);
-    } else {
-        console.log('MySQL connecté avec succès !');
-    }
-});
-
-// Page de connexion (login)
-router.get('/login', (req, res) => {
+// Votre route pour afficher le formulaire de connexion
+router.get('/', (req, res) => {
     res.render('login'); // Affiche le formulaire de connexion
 });
 
 // Traitement du formulaire de connexion
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+router.post('/', async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
 
     try {
-        // Vérification si l'email existe dans la base de données
-        db.query('SELECT * FROM users WHERE email = ?', [email], async (error, results) => {
-            if (error) {
-                throw error;
+        db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+            if (err) {
+                throw err;
             }
+
             if (results.length === 0) {
-                return res.status(401).json({ message: 'Adresse e-mail non trouvée' });
+                return res.status(400).json({ error: 'Email incorrect' });
             }
 
-            // Vérification du mot de passe
             const user = results[0];
+
             const passwordMatch = await bcrypt.compare(password, user.password);
+            console.log(passwordMatch)
             if (!passwordMatch) {
-                return res.status(401).json({ message: 'Mot de passe incorrect' });
+                return res.status(400).json({ error: 'Mot de passe incorrect' });
             }
 
-            res.status(200).json({ message: 'Connecté avec succès' });
+            // Authentification réussie, redirigez l'utilisateur vers une autre page
+            const userId = results[0].id;
+            req.session.userId = userId;
+            req.session.isLoggedIn = true;
+            console.log('Contenu de req.session après modification :', req.session);
+            res.redirect('/');
+
         });
     } catch (error) {
+        console.error('Erreur lors de la connexion :', error);
         res.status(500).json({ error: 'Erreur lors de la connexion' });
     }
 });

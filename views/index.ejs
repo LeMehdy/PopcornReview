@@ -27,7 +27,7 @@
                             <div class="row">
                                 <% for (let j = i; j < i + 6 && j < movies.length; j++) { %>
                                     <div class="col-md-2">
-                                        <a href="/movie/<%= movies[j].id %>">
+                                        <a href="/movie-details/<%= movies[j].id %>">
                                             <img src="https://image.tmdb.org/t/p/w500/<%= movies[j].poster_path %>" class="d-block w-100 img-fluid" alt="<%= movies[j].title %>"
                                                  alt="<%= movies[j].title %> Poster">
                                         </a>
@@ -59,7 +59,7 @@
                                 <div class="row">
                                     <% for (let k = i; k < i + 6 && k < newMovies.length; k++) { %>
                                         <div class="col-md-2">
-                                            <a href="/movie/<%= newMovies[k].id %>">
+                                            <a href="/movie-details/<%= newMovies[k].id %>">
                                                 <img src="https://image.tmdb.org/t/p/w500/<%= newMovies[k].poster_path %>"
                                                  class="d-block w-100 img-fluid" alt="<%= newMovies[k].title %>">
                                             </a>

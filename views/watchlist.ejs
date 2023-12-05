@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist - PopcornReview</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Ajoutez d'autres liens CSS ou styles personnalisés ici -->
+</head>
+<body>
+    <!-- Incluez le contenu du header -->
+    <%- include("header.ejs"); %> 
+
+    
+    <main class="container my-4">
+        <h1>Watchlist</h1>
+        <% if (watchlistMovies.length > 0) { %>
+            <div class="row">
+                <% watchlistMovies.forEach(movie => { %>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="col">
+                                <a href="/movie-details/<%= movie.id %>">
+                                    <img src="https://image.tmdb.org/t/p/w500/<%= movie.poster_path %>" alt="<%= movie.title %>" class="img-fluid">
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= movie.title %></h5>
+                                <p class="card-text"><%= movie.overview %></p>
+                                <!-- Bouton "Remove from Watchlist" -->
+                                <form action="/watchlist/remove-from-watchlist/<%= movie.id %>" method="post">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-times"></i> Remove from Watchlist
+                                    </button>
+                                </form>
+                                <!-- Ajoutez d'autres détails du film ici -->
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <p>Votre watchlist est vide.</p>
+        <% } %>
+    </main>
+    
+    
+
+    <footer class="bg-dark text-light py-3">
+        <!-- Pied de page -->
+        <!-- ... -->
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Ajoutez d'autres scripts au besoin -->
+</body>
+</html>

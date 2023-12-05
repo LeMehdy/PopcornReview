@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require("mysql");
+const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
 
 dotenv.config({ path: './.env' });
@@ -26,27 +27,34 @@ router.get('/', (req, res) => {
 });
 
 
-router.post('/', (req, res) => {
-  console.log(req.body)
+router.post('/', async (req, res) => {
+    console.log(req.body);
     const { username, email, password, full_name, date_of_birth, bio, profile_image_url } = req.body;
 
-    const user = {
-        username,
-        email,
-        password,
-        full_name,
-        date_of_birth,
-        bio,
-        profile_image_url
-    };
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10); // Hashage du mot de passe
 
-    db.query('INSERT INTO users SET ?', user, (err, result) => {
-        if (err) {
-            res.status(500).json({ error: 'Erreur lors de l\'inscription' });
-            throw err;
-        }
-        res.redirect('../'); // Redirection vers la page de connexion après l'inscription
-    });
+        const user = {
+            username,
+            email,
+            password: hashedPassword, // Stockage du mot de passe haché dans la base de données
+            full_name,
+            date_of_birth,
+            bio,
+            profile_image_url
+        };
+
+        db.query('INSERT INTO users SET ?', user, (err, result) => {
+            if (err) {
+                res.status(500).json({ error: 'Erreur lors de l\'inscription' });
+                throw err;
+            }
+            res.redirect('../'); // Redirection vers la page de connexion après l'inscription
+        });
+    } catch (error) {
+        console.error('Erreur lors de l\'inscription :', error);
+        res.status(500).json({ error: 'Erreur lors de l\'inscription' });
+    }
 });
 
 module.exports = router;

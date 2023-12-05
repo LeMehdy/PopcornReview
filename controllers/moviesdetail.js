@@ -22,8 +22,9 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ error: 'Erreur lors de la récupération des détails du film' });
     }
 });
-router.post('/search', async (req, res) => {
 
+router.post('/search', async (req, res) => {
+    console.log(req,res)
     const searchTerm = req.body.searchTerm;
 
     // Effectuez une requête à l'API TMDB avec le terme de recherche
@@ -33,7 +34,7 @@ router.post('/search', async (req, res) => {
 
         // Affichez les résultats de la recherche
         //res.json({ results: searchResults });
-        res.redirect(`/movie/${searchResults[0].id}`)
+        res.redirect(`/movie-details/${searchResults[0].id}`)
     } catch (error) {
         res.status(500).json({ error: 'Erreur lors de la recherche de films' });
     }
