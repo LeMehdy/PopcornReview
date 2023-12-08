@@ -45,8 +45,23 @@ router.post('/', async (req, res) => {
             const userId = results[0].id;
             req.session.userId = userId;
             req.session.isLoggedIn = true;
-            console.log('Contenu de req.session après modification :', req.session);
-            res.redirect('/');
+            
+                        
+            db.query('SELECT * FROM users WHERE id = ? AND isadmin = 1', [userId], (err, results) => {
+                if (err) {
+                    console.error('Erreur lors de la vérification du statut administrateur :', err);
+                    res.status(500).send('Erreur de vérification du statut administrateur.');
+                } else if (results.length > 0) {
+                        console.log("cc")
+                        req.session.isAdmin = true;
+                        
+                        console.log('Contenu de req.session après modification :', req.session);
+                        res.redirect('/');
+                        
+                }
+            }
+            );
+
 
         });
     } catch (error) {

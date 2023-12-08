@@ -17,6 +17,7 @@ app.use(session({
 }));
 app.use((req, res, next) => {
     res.locals.isLoggedIn = req.session.isLoggedIn || false;
+    res.locals.isAdmin = req.session.isAdmin || false;
     next();
 });
 
@@ -28,6 +29,7 @@ app.use('/login', require('./controllers/login'));
 app.use('/logout', require('./controllers/logout'));
 app.use('/profile',require('./controllers/profile'));
 app.use('/watchlist',require('./controllers/watchlist'));
+app.use('/admin',require('./controllers/admin'));
 
 
 
