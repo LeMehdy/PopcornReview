@@ -27,8 +27,17 @@
                         <button type="button" class="btn btn-primary me-2">Rate</button>
                         <button type="button" class="btn btn-secondary me-2">Like</button>
                         <form action="/watchlist/add-to-watchlist/<%= movieDetails.id %>" method="post">
-                            <button type="submit">Add to Watchlist</button>
+                            <button type="submit" class="btn">Add to Watchlist</button>
                         </form>
+                    </div>
+                    <div class="mt-4">
+                        <h3>Rate this Movie</h3>
+                        <div class="rating">
+                            <% for (let i = 1; i <= 5; i++) { %>
+                                <span class="star" data-rating="<%= i %>">&#9733;</span>
+                            <% } %>
+                        </div>
+                        <p class="selected-rating">Your rating: <span id="selected-rating">0</span></p>
                     </div>
                     <!-- Section pour les commentaires -->
                     <div class="mt-4">

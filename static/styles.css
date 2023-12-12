@@ -129,7 +129,12 @@
     transform: translateX(44px) rotate(-270deg);
   }
   
-  
+  .button-wrap {
+    position: relative;
+    width: 100%;
+    display: block;
+    margin-top: 30px;
+  }
   .card-3d-wrap {
     position: relative;
     width: 440px;
@@ -274,8 +279,11 @@
     -webkit-transition: all 200ms linear;
       transition: all 200ms linear;
   }
-  
-  .btn{  
+  #log{
+    margin-top: 30px;
+  }
+  .btn{
+
     border-radius: 4px;
     height: 44px;
     font-size: 13px;
