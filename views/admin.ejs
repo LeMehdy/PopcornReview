@@ -15,7 +15,11 @@
 
     <div class="container mt-4">
         <h1>Admin Control Panel</h1>
+
+        <!-- Users Table -->
+        <h2>Users</h2>
         <table class="table table-striped">
+            <!-- Table Header -->
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
@@ -24,6 +28,7 @@
                     <th>Action</th>
                 </tr>
             </thead>
+            <!-- Table Body -->
             <tbody>
                 <% users.forEach(user => { %>
                     <tr>
@@ -39,6 +44,26 @@
                 <% }); %>
             </tbody>
         </table>
+
+        <!-- Suggestions Section -->
+        <h2>Suggestions</h2>
+        <div class="row">
+            <!-- Display suggestion cards -->
+            <% suggests.forEach(suggestion => { %>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= suggestion.title %></h5>
+                            <p class="card-text"><%= suggestion.description %></p>
+                            <!-- Add other details here if needed -->
+                            <form method="post" action="/admin/delete-suggestion/<%= suggestion.suggestionID %>">
+                                <button type="submit" class="btn red-button">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
     </div>
 
     <!-- Bootstrap JS (place at the end of body for faster load times) -->

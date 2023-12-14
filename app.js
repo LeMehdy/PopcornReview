@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
 const path = require('path');
 const axios = require('axios');
 const bodyParser = require('body-parser')
@@ -10,6 +11,7 @@ const apiKey = 'df1e67f93440369e82c54d553192cb3b';
 app.set("view engine", "ejs");
 app.set('views', path.join( './views'));
 app.use('/static', express.static("static/")); 
+
 app.use(session({
     secret: 'votre_secret_session', // Clé secrète pour signer la session
     resave: false,
@@ -30,6 +32,7 @@ app.use('/logout', require('./controllers/logout'));
 app.use('/profile',require('./controllers/profile'));
 app.use('/watchlist',require('./controllers/watchlist'));
 app.use('/admin',require('./controllers/admin'));
+app.use('/suggest',require('./controllers/suggest'));
 
 
 
