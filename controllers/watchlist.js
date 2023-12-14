@@ -23,11 +23,11 @@ router.post('/add-to-watchlist/:movieId', (req, res) => {
                 console.error('Erreur lors de l\'ajout du film à la watchlist :', err);
                 res.redirect('/'); // Redirigez vers la page d'accueil en cas d'erreur
             } else {
-                res.redirect('/watchlist'); // Redirigez l'utilisateur vers sa watchlist après l'ajout du film
+                res.redirect('/'); // Redirigez l'utilisateur vers la page d'accueil après l'ajout du film
             }
         });
     } else {
-        res.redirect('/login'); // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
+        res.redirect('/register'); // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
     }
 });
 

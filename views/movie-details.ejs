@@ -29,21 +29,24 @@
                             <input type="hidden" id="currentUser" value="null">
                         <% } %>
                         <div class="btn-group" role="group" aria-label="Movie Actions">
-                            <button type="button" class="btn btn-primary">Rate</button>
-                            <button type="button" class="btn btn-secondary">Like</button>
-                            <form action="/watchlist/add-to-watchlist/<%= movieDetails.id %>" method="post">
-                                <button type="submit" class="btn btn-info">Add to Watchlist</button>
+                            <form action="/movie-details/add-to-Like/<%= movieDetails.id %>" method="post">
+                                <button type="submit" class="btn btn-info m-4">I like this one</button>
                             </form>
+                            <form action="/watchlist/add-to-watchlist/<%= movieDetails.id %>" method="post">
+                                <button type="submit" class="btn btn-info m-4">Add to Watchlist</button>
+                            </form>
+                            <div class="ratings ml-4">
+                                <span class="product-rating">?</span><span>/5</span>
+                                <div class="stars">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <i class="fa fa-star star" data-rating="<%= i %>"></i>
+                                    <% } %>
+                                </div>
+                            </div>
                         </div>
+                        
                     </div>
-                    <div class="ratings mt-3">
-                        <span class="product-rating">4</span><span>/5</span>
-                        <div class="stars">
-                            <% for (let i = 1; i <= 5; i++) { %>
-                                <i class="fa fa-star star" data-rating="<%= i %>"></i>
-                            <% } %>
-                        </div>
-                    </div>
+                    
                     <div class="mt-3">
                         <h3>Comments</h3>
                         <form action="/movie-details/<%= movieDetails.id %>/add-comment" method="post">

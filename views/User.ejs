@@ -58,8 +58,34 @@
                 <!-- Section for displaying favorite movies -->
                 <div class="mt-4">
                     <h3>Favorite Movies</h3>
-                    <!-- Display list of favorite movies -->
-                    <!-- ... -->
+                    <% if (Movies.length > 0) { %>
+                        <div class="row">
+                            <% Movies.forEach(movie => { %>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="col">
+                                            <a href="/movie-details/<%= movie.id %>">
+                                                <img src="https://image.tmdb.org/t/p/w500/<%= movie.poster_path %>" alt="<%= movie.title %>" class="img-fluid">
+                                            </a>
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title"><%= movie.title %></h5>
+                                            <p class="card-text"><%= movie.overview %></p>
+                                            <!-- Bouton "Remove from Watchlist" -->
+                                            <form action="/watchlist/remove-from-watchlist/<%= movie.id %>" method="post">
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="fas fa-times"></i> Unlike
+                                                </button>
+                                            </form>
+                                            <!-- Ajoutez d'autres détails du film ici -->
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p>Votre watchlist est vide.</p>
+                    <% } %>
                 </div>
             </div>
         </div>

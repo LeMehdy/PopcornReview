@@ -5,6 +5,16 @@ const path = require('path');
 const axios = require('axios');
 const bodyParser = require('body-parser')
 const session = require('express-session');
+const dotenv = require('dotenv');
+const mysql = require('mysql');
+
+dotenv.config({ path: './.env' });
+const db = mysql.createConnection({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE
+});
 
 const apiKey = 'df1e67f93440369e82c54d553192cb3b'; 
 
@@ -41,17 +51,51 @@ app.use('/suggest',require('./controllers/suggest'));
 
 app.get('/', async (req, res) => {
     try {
-        const trendingResponse = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`);
-        const trendingMovies = trendingResponse.data.results;
+        const query = `
+            SELECT MovieID, COUNT(*) as likes
+            FROM View
+            WHERE \`Like\` = 1
+            GROUP BY MovieID
+            ORDER BY likes DESC
+            LIMIT 10
+        `;
 
-        const newMoviesResponse = await axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=fr-FR&page=1`);
-        const newMovies = newMoviesResponse.data.results;
+        db.query(query, async (error, results) => {
+            if (error) {
+                console.error(error);
+                res.status(500).send('Server error');
+            } else {
+                try {
+                    const movieDetailsPromises = results.map(async (row) => {
+                        const movieID = row.MovieID;
+                        const movieDetailResponse = await axios.get(`https://api.themoviedb.org/3/movie/${movieID}?api_key=${apiKey}`);
+                        const movieDetail = movieDetailResponse.data;
+                        movieDetail.likes = row.likes; // Ajoutez le nombre de likes au détail du film
+                        return movieDetail;
+                    });
 
-        res.render('index', { movies: trendingMovies, newMovies: newMovies });
+                    const mostLikedMovies = await Promise.all(movieDetailsPromises);
+
+                    const trendingResponse = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`);
+                    const trendingMovies = trendingResponse.data.results;
+            
+                    const newMoviesResponse = await axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=fr-FR&page=5`);
+                    const newMovies = newMoviesResponse.data.results;
+                    
+            
+                    res.render('index', { movies: trendingMovies, newMovies: newMovies, mostLikedMovies: mostLikedMovies  });
+                } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ error: 'Erreur lors de la récupération des détails des films depuis TMDb' });
+                }
+            }
+        });
     } catch (error) {
-        res.status(500).json({ error: 'Erreur lors de la récupération des données' });
+        console.error(error);
+        res.status(500).json({ error: 'Erreur lors de la récupération des données de la base de données' });
     }
 });
+
 
 // Écoutez le port pour les requêtes HTTP
 const port = 3000;

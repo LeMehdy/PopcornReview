@@ -161,4 +161,27 @@ router.post('/:movieid/delete-rating', (req, res) => {
     });
 });
 
+router.post('/add-to-Like/:movieId', (req, res) => {
+    if (req.session.isLoggedIn) {
+        const userId = req.session.userId; // Obtenez l'ID de l'utilisateur connecté depuis la session
+        const movieId = req.params.movieId; // Obtenez l'ID du film à ajouter depuis les paramètres d'URL
+
+        // Insérez une entrée dans la table Views pour ajouter ce film à la watchlist de l'utilisateur
+        const insertQuery = 'INSERT INTO View (MovieID, UserID, `Like`) VALUES (?, ?, ?)';
+        db.query(insertQuery, [movieId, userId, 1], (err, result) => {
+            if (err) {
+                console.error('Erreur lors de l\'ajout du film à la watchlist :', err);
+                res.redirect('/'); // Redirigez vers la page d'accueil en cas d'erreur
+            }else {
+                res.redirect(/movie-details/ + movieId);
+            } 
+        });
+    } else {
+        res.redirect('/register'); // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
+    
+    }
+
+});
+
+
 module.exports = router;

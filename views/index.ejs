@@ -47,6 +47,43 @@
             </div>
         </section>
         
+
+<section>
+    <h2>Most Liked Movies</h2>
+    <div class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <% if (mostLikedMovies && mostLikedMovies.length > 0) { %>
+                <% for (let i = 0; i < mostLikedMovies.length; i += 6) { %>
+                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                        <div class="row">
+                            <% for (let j = i; j < i + 6 && j < mostLikedMovies.length; j++) { %>
+                                <% console.log(mostLikedMovies[j]) %>
+                                <div class="col-md-2">
+                                    <a href="/movie-details/<%= mostLikedMovies[j].id %>">
+                                        <img src="https://image.tmdb.org/t/p/w500/<%= mostLikedMovies[j].poster_path %>"
+                                            class="d-block w-100 img-fluid" alt="<%= mostLikedMovies[j].title %>">
+                                    </a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <p>Aucun film aimé n'a été trouvé.</p>
+            <% } %>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Précédent</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Suivant</span>
+        </a>
+    </div>
+    
+        
+</section>
         <section>
             <h2>Some Random Movies</h2>
             <ul>
@@ -58,6 +95,7 @@
                                 <div class="row">
                                     <% for (let k = i; k < i + 6 && k < newMovies.length; k++) { %>
                                         <div class="col-md-2">
+                                            
                                             <a href="/movie-details/<%= newMovies[k].id %>">
                                                 <img src="https://image.tmdb.org/t/p/w500/<%= newMovies[k].poster_path %>"
                                                  class="d-block w-100 img-fluid" alt="<%= newMovies[k].title %>">
