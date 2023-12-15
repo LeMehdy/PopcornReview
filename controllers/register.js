@@ -21,9 +21,9 @@ db.connect((error) => {
     }
 });
 
-// Page d'inscription (register)
+
 router.get('/', (req, res) => {
-    res.render('register'); // Ou tout autre traitement pour cette route
+    res.render('register'); 
 });
 
 
@@ -32,12 +32,12 @@ router.post('/', async (req, res) => {
     const { username, email, password, full_name, date_of_birth, bio, profile_image_url } = req.body;
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10); // Hashage du mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10); 
 
         const user = {
             username,
             email,
-            password: hashedPassword, // Stockage du mot de passe haché dans la base de données
+            password: hashedPassword, 
             full_name,
             date_of_birth,
             bio,
@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
                 res.status(500).json({ error: 'Erreur lors de l\'inscription' });
                 throw err;
             }
-            res.redirect('../'); // Redirection vers la page de connexion après l'inscription
+            res.redirect('../'); 
         });
     } catch (error) {
         console.error('Erreur lors de l\'inscription :', error);

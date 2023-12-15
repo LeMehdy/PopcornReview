@@ -23,7 +23,7 @@ app.set('views', path.join( './views'));
 app.use('/static', express.static("static/")); 
 
 app.use(session({
-    secret: 'votre_secret_session', // Clé secrète pour signer la session
+    secret: 'votre_secret_session', 
     resave: false,
     saveUninitialized: false
 }));
@@ -70,7 +70,7 @@ app.get('/', async (req, res) => {
                         const movieID = row.MovieID;
                         const movieDetailResponse = await axios.get(`https://api.themoviedb.org/3/movie/${movieID}?api_key=${apiKey}`);
                         const movieDetail = movieDetailResponse.data;
-                        movieDetail.likes = row.likes; // Ajoutez le nombre de likes au détail du film
+                        movieDetail.likes = row.likes; 
                         return movieDetail;
                     });
 

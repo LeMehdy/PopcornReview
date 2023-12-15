@@ -15,12 +15,8 @@ const db = mysql.createConnection({
 router.get('/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
-
-        // Fetch movie details from TMDB API
         const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}`);
         const movieDetails = response.data;
-
-        // Fetch current user info from database
         const selectUserQuery = 'SELECT * FROM Users WHERE id = ?';
         if (req.session.userId) {
             db.query(selectUserQuery, [req.session.userId], (err, userResults) => {
@@ -46,7 +42,6 @@ router.get('/:id', async (req, res) => {
                     return;
                 }
 
-                // Fetch number of likes and average rating for the movie
                 const likesQuery = 'SELECT SUM(`Like`) as likes FROM view WHERE movieID = ?';
                 const ratingQuery = 'SELECT AVG(rating) as averageRating FROM Ratings WHERE movieId = ?';
 
@@ -76,12 +71,8 @@ router.get('/:id', async (req, res) => {
                                 res.status(500).send('Error fetching user like');
                                 return;
                             }
-                            console.log('userLikeResult:', userLikeResult);
                             const userHasLiked = userLikeResult.some(row => row.Like == 1);
                             const userHasWatchlisted = userLikeResult.some(row => row.addToWatchlist == 1);
-                            console.log('userHasLiked', userHasLiked);
-
-                            // Render the movie details page with the movie details, comments, likes, average rating, and userHasLiked
                             res.render('movie-details', {
                                 movieDetails: movieDetails,
                                 comments: commentsForMovie,
@@ -103,27 +94,24 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Route pour ajouter un commentaire à un film
-// Route pour ajouter un commentaire à un film
+
 router.post('/:id/add-comment', async (req, res) => {
     const movieId = req.params.id;
-    const commentText = req.body.reviewText; // Récupérer le texte du commentaire depuis le formulaire
-    const UserId = req.session.userId; // Utiliser la variable UserId pour stocker l'ID de l'utilisateur
+    const commentText = req.body.reviewText; 
+    const UserId = req.session.userId; 
 
-    // Insérer le commentaire dans la base de données (dans la table 'View' par exemple)
     const insertQuery = 'INSERT INTO View (userID, movieID, reviewText) VALUES (?, ?, ?)';
     db.query(insertQuery, [UserId, movieId, commentText], (err, result) => {
         if (err) {
             console.error('Erreur lors de l\'insertion du commentaire :', err);
             res.status(500).json({ error: 'Erreur lors de l\'insertion du commentaire' });
         } else {
-            // Rediriger vers la page des détails du film une fois le commentaire ajouté
             res.redirect(`/movie-details/${movieId}`);
         }
     });
 });
 router.post('/:movieid/update-comment/:viewid', async (req, res) => {
-    const movieId = req.params.movieid; // Use 'movieid', not 'id'
+    const movieId = req.params.movieid; 
     const commentId = req.params.viewid;
     const commentText = req.body.reviewText;
     console.log(commentId);
@@ -138,7 +126,7 @@ router.post('/:movieid/update-comment/:viewid', async (req, res) => {
     });
 });
 router.post('/:movieid/delete-comment/:viewid', async (req, res) => {
-    const movieId = req.params.movieid; // Use 'movieid', not 'id'
+    const movieId = req.params.movieid; 
     const commentId = req.params.viewid;
     console.log(commentId);
     const deleteQuery = 'DELETE FROM View WHERE ViewID = ?';
@@ -152,25 +140,19 @@ router.post('/:movieid/delete-comment/:viewid', async (req, res) => {
     });
 });
 router.post('/:movieId/rate', (req, res) => {
-    console.log('req.body', req.body);
     const movieId = req.params.movieId;
     const userId = req.body.userId;
     const rating = req.body.rating;
-    console.log(movieId, userId, rating);
-    // Find existing rating
     const findQuery = 'SELECT * FROM Ratings WHERE movieId = ? AND userId = ?';
     db.query(findQuery, [movieId, userId], (err, existingRatings) => {
         if (err) {
-            // Handle error
-            console.error(err); // Add this line to see the error in the console
+            console.error(err); 
             res.status(500).json({ error: 'Erreur lors de la recherche de la note' });
         } else {
             if (existingRatings.length > 0) {
-                // Update existing rating
                 const updateQuery = 'UPDATE Ratings SET rating = ? WHERE movieId = ? AND userId = ?';
                 db.query(updateQuery, [rating, movieId, userId], (err, result) => {
                     if (err) {
-                        // Handle error
                         console.error(err);
                         res.status(500).json({ error: 'Erreur lors de la mise à jour de la note' });
                     } else {
@@ -178,7 +160,6 @@ router.post('/:movieId/rate', (req, res) => {
                     }
                 });
             } else {
-                // Create new rating
                 const insertQuery = 'INSERT INTO Ratings (movieId, userId, rating) VALUES (?, ?, ?)';
                 db.query(insertQuery, [movieId, userId, rating], (err, result) => {
                     if (err) {
@@ -210,46 +191,44 @@ router.post('/:movieid/delete-rating', (req, res) => {
 
 router.post('/add-to-Like/:movieId', (req, res) => {
     if (req.session.isLoggedIn) {
-        const userId = req.session.userId; // Obtenez l'ID de l'utilisateur connecté depuis la session
-        const movieId = req.params.movieId; // Obtenez l'ID du film à ajouter depuis les paramètres d'URL
-
-        // Insérez une entrée dans la table Views pour ajouter ce film à la watchlist de l'utilisateur
+        const userId = req.session.userId; 
+        const movieId = req.params.movieId; 
         const insertQuery = 'INSERT INTO View (MovieID, UserID, `Like`) VALUES (?, ?, ?)';
         db.query(insertQuery, [movieId, userId, 1], (err, result) => {
             if (err) {
                 console.error('Erreur lors de l\'ajout du film à la watchlist :', err);
-                res.redirect('/'); // Redirigez vers la page d'accueil en cas d'erreur
+                res.redirect('/'); 
             }else {
                 res.redirect(/movie-details/ + movieId);
             } 
         });
     } else {
-        res.redirect('/register'); // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
+        res.redirect('/register'); 
     
     }
 
 });
 router.post('/remove-from-Like/:movieId', (req, res) => {
     if (req.session.isLoggedIn) {
-        const userId = req.session.userId; // Obtenez l'ID de l'utilisateur connecté depuis la session
-        const movieId = req.params.movieId; // Obtenez l'ID du film à ajouter depuis les paramètres d'URL
+        const userId = req.session.userId; 
+        const movieId = req.params.movieId; 
 
-        // Mettez à jour l'entrée dans la table Views pour supprimer le "like" de l'utilisateur pour ce film
+    
         const updateQuery = 'UPDATE View SET `Like` = 0 WHERE MovieID = ? AND UserID = ?';
         db.query(updateQuery, [movieId, userId], (err, result) => {
             if (err) {
                 console.error('Erreur lors de la suppression du "like" pour le film :', err);
-                res.redirect('/'); // Redirigez vers la page d'accueil en cas d'erreur
+                res.redirect('/'); 
             } else {
                 res.redirect('/movie-details/' + movieId);
             }
         });
     } else {
-        res.redirect('/register'); // Redirigez vers la page de connexion si l'utilisateur n'est pas connecté
+        res.redirect('/register'); 
     }
 });
 
-// Get the number of likes for a specific movie
+
 router.get('/:movieId/likes', (req, res) => {
     const movieId = req.params.movieId;
     const sql = 'SELECT COUNT(*) as likes FROM Likes WHERE movieId = ?';
@@ -264,7 +243,6 @@ router.get('/:movieId/likes', (req, res) => {
     });
 });
 
-// Get the average rating for a specific movie
 router.get('/:movieId/average-rating', (req, res) => {
     const movieId = req.params.movieId;
     const sql = 'SELECT AVG(rating) as averageRating FROM Ratings WHERE movieId = ?';
@@ -282,12 +260,10 @@ router.get('/:movieId/average-rating', (req, res) => {
 router.post('/search', async (req, res) => {
     const searchTerm = req.body.searchTerm;
 
-    // Effectuez une requête à l'API TMDB avec le terme de recherche
     try {
         const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(searchTerm)}`);
         const searchResults = response.data.results;
 
-        // Affichez les résultats de la recherche
         //res.json({ results: searchResults });
         res.redirect(`/movie-details/${searchResults[0].id}`)
     } catch (error) {
