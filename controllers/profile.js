@@ -3,12 +3,51 @@ const router = express.Router();
 const mysql = require('mysql');
 const dotenv = require('dotenv');
 const axios = require('axios');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 dotenv.config({ path: './.env' });
+const dirPath = path.join(__dirname, '../static/img');
 const db = mysql.createConnection({
     host: process.env.DATABASE_HOST,
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE
+});
+
+fs.access(dirPath, fs.constants.F_OK, (err) => {
+    if (err) {
+        console.error(`Le dossier ${dirPath} n'existe pas`);
+    } else {
+        console.log(`Le dossier ${dirPath} existe`);
+    }
+});
+
+// Configuration de multer pour la gestion des fichiers
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './static/img'); // Répertoire où les images téléchargées seront stockées temporairement
+    },
+    filename: function (req, file, cb) {
+        const extension = path.extname(file.originalname);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + extension);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5 // Limite de taille du fichier (ici, 5 Mo)
+    },
+    fileFilter: function (req, file, cb) {
+        // Vérifier le type de fichier (ici, uniquement les images)
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only images are allowed'));
+        }
+    }
 });
 
 router.get('/', (req, res) => {
@@ -39,7 +78,7 @@ router.get('/', (req, res) => {
             }
 
             // Get user info
-            db.query('SELECT username, bio FROM users WHERE id = ?', [userId], (err, results) => {
+            db.query('SELECT * FROM users WHERE id = ?', [userId], (err, results) => {
                 if (err) {
                     console.error('Error fetching user data:', err);
                     res.redirect('/'); // Redirect to the homepage or another page in case of an error
@@ -49,7 +88,7 @@ router.get('/', (req, res) => {
                 if (results.length > 0) {
                     const username = results[0].username;
                     const bio = results[0].bio;
-                    const urlpp = results[0].urlpp;
+                    const urlpp = results[0].profile_image_url;
                     // Render the profile page with user data and movie details
                     res.render('user', { username, bio,urlpp, Movies: moviesWithDetails });
                 } else {
@@ -103,6 +142,41 @@ router.post('/delete-account', (req, res) => {
             });
         }
     });
+});
+
+router.post('/update-picture', upload.single('profilePicture'), (req, res, next) => {
+    // Access the uploaded file via req.file
+    if (!req.file) {
+        return res.status(400).send('No file uploaded');
+    }
+
+    // Save the image path in the database
+    const userId = req.session.userId; // Get the ID of the logged-in user from the session
+    const imagePath = './static/img/' + req.file.filename; // Build the image path
+
+    const updateQuery = 'UPDATE users SET profile_image_url = ? WHERE id = ?';
+    db.query(updateQuery, [imagePath, userId], (err, result) => {
+        if (err) {
+            console.error('Error updating profile image:', err);
+            return res.redirect('/'); // Redirect to the home page in case of error
+        } else {
+            res.redirect('/profile'); // Redirect to the profile page after updating the image
+        }
+    });
+}, (err, req, res, next) => {
+    // This is the error-handling middleware function
+    if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        console.error('A Multer error occurred when uploading:', err);
+        return res.status(500).send('A Multer error occurred when uploading.');
+    } else if (err) {
+        // An unknown error occurred when uploading.
+        console.error('An unknown error occurred when uploading:', err);
+        return res.status(500).send('An unknown error occurred when uploading.');
+    }
+
+    // Everything went fine.
+    next();
 });
 
 module.exports = router;

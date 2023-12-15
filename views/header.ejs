@@ -16,12 +16,15 @@
                 <span style="--i:6">r</span>
                 <span style="--i:7">n</span>
             </div>
-            <div class="d-flex flex-row">
-                <form action="/movie-details/search" method="post" class="searchbar"><input class="form-control" type="text" name="searchTerm" id="searchInput" placeholder="Search" aria-label="Search"></form>
+            <div >
+                <form action="/movie-details/search" method="post" class="searchbar d-flex">
+                    <input class="form-control mr-2" type="text" name="searchTerm" id="searchInput" placeholder="Search" aria-label="Search" autocomplete="off">
+                    <button class="btn btn-outline-success" type="submit" id="searchButton">Search</button>
+                </form>
                 <div class="dropdown">
-                    <ul id="searchDropdown" class="dropdown-menu" aria-labelledby="searchInput"></ul>
-                </div>
-                <button class="btn btn-primary my-2 my-sm-0" type="button">Search</button>
+                    <ul id="searchDropdown" class="dropdown-menu" aria-labelledby="searchInput" ></ul>
+            </div>
+                
             </div>
             
         </div>
@@ -45,70 +48,36 @@
                         <a class="nav-link" href="/Movies">Movies</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Watchlist">My Watchedlist</a>
+                        <a class="nav-link" href="/Watchlist">My Watchlist</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">Random Movie</a>
+                        <a class="nav-link" href="/suggest">Suggest</a>
                     </li>
                     <li class="nav-item">
 
-                        <% if (isLoggedIn) { %>
-                            <!-- Si l'utilisateur est connecté, afficher le bouton "Log Out" -->
+                        <% if (isLoggedIn) { %>        
                             <form action="/logout">
-                                <button type="submit" class="btn btn-primary">Log Out</button>
+                                <button type="submit sm-8" class="btn btn-primary">Log Out</button>
                             </form>
                         <% } else { %>
-                            <!-- Sinon, afficher le bouton "Sign Up/Login" -->
-                            <button id="loginButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Sign Up/Login</button>
+                            <a class="btn sm-8" href="/register">Login</a>
                         <% } %>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="loginModalLabel">Login</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <!-- Formulaire de connexion -->
-              <form action="/login" method="post">
-                <div class="mb-3">
-                    <label for="inputEmail" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="inputEmail" name="email">
-                </div>
-                <div class="mb-3">
-                    <label for="inputPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="inputPassword" name="password">
-                </div>
-                <div class="form-check mb-3">
-                    <label class="form-check-label">
-                        <input class="form-check-input" type="checkbox" name="remember"> Remember me
-                    </label>
-                </div>
-                <a href="/register">
-                    <h6 class="sign up">No account ? Sign up</h6>
-                </a>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </form>
-            </div>
-          </div>
-        </div>
-      </div>
       <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script>
-        // À placer dans un fichier JavaScript séparé ou directement dans votre page HTML
+       
         $(document).ready(function() {
             $('#searchInput').on('input', function() {
                 const searchQuery = $(this).val().trim();
                 if (searchQuery.length > 0) {
                     $.get(`https://api.themoviedb.org/3/search/movie?api_key=df1e67f93440369e82c54d553192cb3b&query=${searchQuery}`)
                     .done(function(data) {
-                        const movies = data.results.slice(0, 5); // Limitez les résultats à un certain nombre
+                        const movies = data.results.slice(0, 5); 
                         displaySuggestions(movies);
                     })
                     .fail(function() {
@@ -118,6 +87,7 @@
                     $('#searchDropdown').empty().hide();
                 }
             });
+            
 
             function displaySuggestions(movies) {
                 const dropdown = $('#searchDropdown');
@@ -135,15 +105,15 @@
                 const selectedMovie = $(this).text();
                 $('#searchInput').val(selectedMovie);
                 $('#searchDropdown').empty().hide();
-                // Effectuez une action de recherche ou de redirection en fonction du film sélectionné
+               
             });
 
             $('#searchButton').on('click', function() {
                 const searchTerm = $('#searchInput').val().trim();
-                // Effectuez une action de recherche ou de redirection en fonction du terme de recherche
+                
             });
         });
-            // Vérifie si l'utilisateur est connecté (par exemple, via une variable globale)
+            
         
 
     

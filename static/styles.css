@@ -8,7 +8,9 @@
   margin: 0;
   box-sizing: border-box;
 }
-
+.bg-dark {
+  background-color: #1f2029 !important;
+}
 .searchbar {
   min-width: 200px;
   margin-right: 10px;

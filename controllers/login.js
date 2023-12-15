@@ -13,12 +13,12 @@ const db = mysql.createConnection({
     database: process.env.DATABASE
 });
 
-// Votre route pour afficher le formulaire de connexion
+
 router.get('/', (req, res) => {
-    res.render('login'); // Affiche le formulaire de connexion
+    res.render('login'); 
 });
 
-// Traitement du formulaire de connexion
+
 router.post('/', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -30,7 +30,14 @@ router.post('/', async (req, res) => {
             }
 
             if (results.length === 0) {
-                return res.status(400).json({ error: 'Email incorrect' });
+                res.send(
+                    `<script>
+                      alert('This email doesnt exist.');
+                      window.location.href = '/register';
+                    </script>`
+                  );
+                  return res.end();
+          
             }
 
             const user = results[0];
@@ -38,10 +45,16 @@ router.post('/', async (req, res) => {
             const passwordMatch = await bcrypt.compare(password, user.password);
             console.log(passwordMatch)
             if (!passwordMatch) {
-                return res.status(400).json({ error: 'Mot de passe incorrect' });
+                res.send(
+                    `<script>
+                      alert('Wrong password.');
+                      window.location.href = '/register';
+                    </script>`
+                  );
+                  return res.end();
             }
 
-            // Authentification réussie, redirigez l'utilisateur vers une autre page
+            
             const userId = results[0].id;
             req.session.userId = userId;
             req.session.isLoggedIn = true;

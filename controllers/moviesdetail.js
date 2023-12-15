@@ -69,7 +69,7 @@ router.get('/:id', async (req, res) => {
                         const averageRating = ratingResult[0].averageRating;
                         console.log('userId:', req.session.userId);
                         console.log('movieId:', movieId);
-                        const userLikeQuery = 'SELECT `Like` FROM view WHERE userId = ? AND movieID = ?';
+                        const userLikeQuery = 'SELECT * FROM view WHERE userId = ? AND movieID = ?';
                         db.query(userLikeQuery, [req.session.userId, movieId], (err, userLikeResult) => {
                             if (err) {
                                 console.error('Error fetching user like:', err);
@@ -78,6 +78,7 @@ router.get('/:id', async (req, res) => {
                             }
                             console.log('userLikeResult:', userLikeResult);
                             const userHasLiked = userLikeResult.some(row => row.Like == 1);
+                            const userHasWatchlisted = userLikeResult.some(row => row.addToWatchlist == 1);
                             console.log('userHasLiked', userHasLiked);
 
                             // Render the movie details page with the movie details, comments, likes, average rating, and userHasLiked
@@ -88,7 +89,8 @@ router.get('/:id', async (req, res) => {
                                 likes: likes,
                                 averageRating: averageRating,
                                 IsLoggedIn: !!req.session.userId,
-                                userHasLiked: userHasLiked
+                                userHasLiked: userHasLiked,
+                                userHasWatchlisted: userHasWatchlisted
                             });
                         });
                     });
@@ -277,5 +279,20 @@ router.get('/:movieId/average-rating', (req, res) => {
     });
 });
 
+router.post('/search', async (req, res) => {
+    const searchTerm = req.body.searchTerm;
+
+    // Effectuez une requête à l'API TMDB avec le terme de recherche
+    try {
+        const response = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(searchTerm)}`);
+        const searchResults = response.data.results;
+
+        // Affichez les résultats de la recherche
+        //res.json({ results: searchResults });
+        res.redirect(`/movie-details/${searchResults[0].id}`)
+    } catch (error) {
+        res.status(500).json({ error: 'Erreur lors de la recherche de films' });
+    }
+    });
 
 module.exports = router;

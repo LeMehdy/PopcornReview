@@ -43,7 +43,6 @@ router.get('/', checkAdminAuthentication, (req, res) => {
             res.status(500).send('Erreur lors de la récupération des utilisateurs.');
         } else {
             // Afficher la page d'administration avec la liste des utilisateurs
-            console.log(results);
             res.render('admin', { users: results, suggests: result }); // Utilisez votre template pour afficher les utilisateurs
         }
     });
@@ -55,6 +54,22 @@ router.post('/delete-user/:userId', checkAdminAuthentication, (req, res) => {
     const userIdToDelete = req.params.userId;
 
     // Supprimer le compte utilisateur de la base de données
+    db.query('DELETE FROM view WHERE userID = ?', userIdToDelete, (err, result) => {
+        if (err) {
+            console.error('Erreur lors de la suppression des vues de l\'utilisateur :', err);
+            res.status(500).send('Erreur lors de la suppression des vues de l\'utilisateur.');
+        } else {
+            // Maintenant, vous pouvez supprimer l'utilisateur
+            db.query('DELETE FROM users WHERE id = ?', userIdToDelete, (err, result) => {
+                if (err) {
+                    console.error('Erreur lors de la suppression du compte utilisateur :', err);
+                    res.status(500).send('Erreur lors de la suppression du compte utilisateur.');
+                } else {
+                    res.redirect('/admin'); // Redirection vers la page d'administration après la suppression
+                }
+            });
+        }
+    });
     db.query('DELETE FROM users WHERE id = ?', userIdToDelete, (err, result) => {
         if (err) {
             console.error('Erreur lors de la suppression du compte utilisateur :', err);
