@@ -29,18 +29,31 @@
                             <input type="hidden" id="currentUser" value="null">
                         <% } %>
                         <div class="btn-group" role="group" aria-label="Movie Actions">
-                            <form action="/movie-details/add-to-Like/<%= movieDetails.id %>" method="post">
-                                <button type="submit" class="btn btn-info m-4">I like this one</button>
-                            </form>
+                            <% if (userHasLiked) { %>
+                                <form action="/movie-details/remove-from-Like/<%= movieDetails.id %>" method="post">
+                                    <button type="submit" class="btn btn-info m-4">Dislike</button>
+                                </form>
+                            <% } else { %>
+                                <form action="/movie-details/add-to-Like/<%= movieDetails.id %>" method="post">
+                                    <button type="submit" class="btn btn-info m-4">I like this one</button>
+                                </form>
+                            <% } %>
                             <form action="/watchlist/add-to-watchlist/<%= movieDetails.id %>" method="post">
                                 <button type="submit" class="btn btn-info m-4">Add to Watchlist</button>
                             </form>
-                            <div class="ratings ml-4">
-                                <span class="product-rating">?</span><span>/5</span>
+                            <div class="ratings me-5 ms-3">
+                                <span class="product-rating ">?</span><span>/5</span>
                                 <div class="stars">
                                     <% for (let i = 1; i <= 5; i++) { %>
                                         <i class="fa fa-star star" data-rating="<%= i %>"></i>
                                     <% } %>
+                                </div>
+                            </div>
+                            <div class="card ml-8 style="width: 10rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Movie Stats</h5>
+                                    <p class="card-text">Likes: <%= likes %></p>
+                                    <p class="card-text">Average User Rating: <%= averageRating %></p>
                                 </div>
                             </div>
                         </div>

@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PopcornReview</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    
-   
+    <link rel="stylesheet" href="styles.css"> <!-- Ajoutez un fichier CSS externe pour personnaliser le style -->
 </head>
+
 <body>
     <%- include("header.ejs"); %>
 
     <main class="container mt-4">
         <section class="text-center">
             <h1>Welcome, let's rate some movies?</h1>
-            <a class="btn btn-primary" href="/movies">Let's Go</a>
-            <a class="btn btn-secondary" href="/suggest">Profile</a>
+            <a class="btn btn-primary m-4" href="/movies" >Let's Go</a>
+            <a class="btn btn-secondary m-4" href="/suggest">Can I Suggest ?</a>
         </section>
-        <section>
+
+        <section class="mb-5">
             <h1>Trending Movies</h1>
             <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -46,84 +48,78 @@
                 </button>
             </div>
         </section>
-        
 
-<section>
-    <h2>Most Liked Movies</h2>
-    <div class="carousel slide" data-ride="carousel">
-        <div class="carousel-inner">
-            <% if (mostLikedMovies && mostLikedMovies.length > 0) { %>
-                <% for (let i = 0; i < mostLikedMovies.length; i += 6) { %>
-                    <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
-                        <div class="row">
-                            <% for (let j = i; j < i + 6 && j < mostLikedMovies.length; j++) { %>
-                                <% console.log(mostLikedMovies[j]) %>
-                                <div class="col-md-2">
-                                    <a href="/movie-details/<%= mostLikedMovies[j].id %>">
-                                        <img src="https://image.tmdb.org/t/p/w500/<%= mostLikedMovies[j].poster_path %>"
-                                            class="d-block w-100 img-fluid" alt="<%= mostLikedMovies[j].title %>">
-                                    </a>
-                                </div>
-                            <% } %>
-                        </div>
-                    </div>
-                <% } %>
-            <% } else { %>
-                <p>Aucun film aimé n'a été trouvé.</p>
-            <% } %>
-        </div>
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Précédent</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Suivant</span>
-        </a>
-    </div>
-    
-        
-</section>
-        <section>
-            <h2>Some Random Movies</h2>
-            <ul>
-
-                <div id="carouselNewMovies" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        <% for (let i = 0; i < newMovies.length; i+=6) { %>
+        <section class="mb-5">
+            <h2>Most Liked Movies</h2>
+            <div class="carousel slide" data-ride="carousel" id="carouselExampleIndicators">
+                <div class="carousel-inner">
+                    <% if (mostLikedMovies && mostLikedMovies.length > 0) { %>
+                        <% for (let i = 0; i < mostLikedMovies.length; i += 6) { %>
                             <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
-                                <div class="row">
-                                    <% for (let k = i; k < i + 6 && k < newMovies.length; k++) { %>
-                                        <div class="col-md-2">
-                                            
-                                            <a href="/movie-details/<%= newMovies[k].id %>">
-                                                <img src="https://image.tmdb.org/t/p/w500/<%= newMovies[k].poster_path %>"
-                                                 class="d-block w-100 img-fluid" alt="<%= newMovies[k].title %>">
+                                <div class="row row-cols-2 row-cols-md-6 g-3">
+                                    <% for (let j = i; j < i + 6 && j < mostLikedMovies.length; j++) { %>
+                                        <div class="col">
+                                            <a href="/movie-details/<%= mostLikedMovies[j].id %>">
+                                                <img src="https://image.tmdb.org/t/p/w500/<%= mostLikedMovies[j].poster_path %>"
+                                                    class="img-fluid rounded" alt="<%= mostLikedMovies[j].title %>">
                                             </a>
+                                            <p><%= mostLikedMovies[j].likes %> likes</p>
                                         </div>
                                     <% } %>
                                 </div>
                             </div>
                         <% } %>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselNewMovies" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselNewMovies" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                    <% } else { %>
+                        <p>No liked movies found.</p>
+                    <% } %>
                 </div>
-                
-            </ul>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </section>
+
+        <section>
+            <h2>Some Random Movies</h2>
+            <div id="carouselNewMovies" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    <% for (let i = 0; i < newMovies.length; i+=6) { %>
+                        <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                            <div class="row row-cols-2 row-cols-md-6 g-3">
+                                <% for (let k = i; k < i + 6 && k < newMovies.length; k++) { %>
+                                    <div class="col">
+                                        <a href="/movie-details/<%= newMovies[k].id %>">
+                                            <img src="https://image.tmdb.org/t/p/w500/<%= newMovies[k].poster_path %>"
+                                             class="img-fluid rounded" alt="<%= newMovies[k].title %>">
+                                        </a>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselNewMovies" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselNewMovies" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
         </section>
     </main>
 
-    <%- include("footer.ejs"); %> 
+    <%- include("footer.ejs"); %>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ejs@3.1.6/ejs.min.js"></script>
 </body>
+
 </html>

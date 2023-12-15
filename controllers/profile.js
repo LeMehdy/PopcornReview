@@ -3,7 +3,6 @@ const router = express.Router();
 const mysql = require('mysql');
 const dotenv = require('dotenv');
 const axios = require('axios');
-
 dotenv.config({ path: './.env' });
 const db = mysql.createConnection({
     host: process.env.DATABASE_HOST,
@@ -65,6 +64,45 @@ router.get('/', (req, res) => {
 
 });
 
+router.post('/update-bio', (req, res) => {
+    const newBio = req.body.bio;
+    const userId = req.session.userId; // Get the ID of the logged-in user from the session
 
+    // Update the user's bio in the database
+    
+    const updateQuery = 'UPDATE users SET Bio = ? WHERE id = ?';
+    db.query(updateQuery, [newBio, userId], (err, result) => {
+        if (err) {
+            console.error('ERROR:', err);
+            res.redirect('/'); // Redirect to the homepage in case of an error
+        } else {
+            res.redirect('/profile'); // Redirect the user to the profile page after updating the bio
+        }
+    });
+});
+
+// Route to delete the user's account
+router.post('/delete-account', (req, res) => {
+    const userId = req.session.userId; // Get the ID of the logged-in user from the session
+
+    // Delete the user's account from the database
+    const deleteQuery = 'DELETE FROM users WHERE id = ?';
+    db.query(deleteQuery, [userId], (err, result) => {
+        if (err) {
+            console.error('Error deleting account:', err);
+            res.redirect('/'); // Redirect to the homepage in case of an error
+        } else {
+            // Log out the user by destroying their session
+            req.session.destroy(err => {
+                if (err) {
+                    console.error('Error logging out:', err);
+                    res.redirect('/'); // Redirect to the homepage in case of an error
+                } else {
+                    res.redirect('/'); // Redirect to the homepage after deleting the account
+                }
+            });
+        }
+    });
+});
 
 module.exports = router;
